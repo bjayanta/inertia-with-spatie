@@ -5,9 +5,11 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link } from '@inertiajs/react';
 
+import { usePermission } from '@/Composables/permissions';
+
 export default function Authenticated({ user, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
-    console.log(user.roles.includes('admin'))
+    const { hasRole, hasPermission } = usePermission()
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -26,13 +28,29 @@ export default function Authenticated({ user, header, children }) {
                                     Dashboard
                                 </NavLink>
 
-                                {user.roles.includes('admin') ? (
-                                    <NavLink
-                                        href={route('admin.index')}
-                                        active={route().current('admin.index')}
-                                    >
-                                        Admin
-                                    </NavLink>
+                                {hasRole('admin') ? (
+                                    <>
+                                        <NavLink
+                                            href={route('admin.index')}
+                                            active={route().current('admin.index')}
+                                        >
+                                            Admin
+                                        </NavLink>
+
+                                        <NavLink
+                                            href={route('roles.index')}
+                                            active={route().current('roles.*')}
+                                        >
+                                            Roles
+                                        </NavLink>
+
+                                        <NavLink
+                                            href={route('permissions.index')}
+                                            active={route().current('permissions.*')}
+                                        >
+                                            Permissions
+                                        </NavLink>
+                                    </>
                                 ) : ''}
                             </div>
                         </div>
@@ -65,6 +83,13 @@ export default function Authenticated({ user, header, children }) {
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content>
+                                        {/* Admin */}
+                                        {hasRole('admin') ? (
+                                            <>
+                                                <Dropdown.Link href={route('users.index')}>Users</Dropdown.Link>
+                                            </>
+                                        ) : ''}
+
                                         <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
                                         <Dropdown.Link href={route('logout')} method="post" as="button">
                                             Log Out
