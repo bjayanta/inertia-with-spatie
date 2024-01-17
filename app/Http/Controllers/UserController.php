@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\User\CreateRequest;
 use App\Http\Requests\User\UpdateRequest;
+use App\Http\Resources\RoleResource;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -11,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -59,8 +61,11 @@ class UserController extends Controller
      */
     public function edit(User $user): Response
     {
+        $roles = Role::all();
+
         return Inertia::render('Admin/Users/Edit', [
-            'user' => new UserResource($user)
+            'user' => new UserResource($user->loadMissing('roles')),
+            'roles' => RoleResource::collection($roles),
         ]);
     }
 
@@ -75,7 +80,9 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return to_route('users.index');
+        $user->syncRoles($request->roles);
+
+        return back();
     }
 
     /**

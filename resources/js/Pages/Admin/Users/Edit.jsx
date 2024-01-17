@@ -4,14 +4,39 @@ import InputLabel from "@/Components/InputLabel.jsx";
 import TextInput from "@/Components/TextInput.jsx";
 import InputError from "@/Components/InputError.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
+import Checkbox from "@/Components/Checkbox.jsx";
+import {useEffect, useState} from "react";
 
-export default function RoleEdit({ auth, user }) {
+export default function RoleEdit({ auth, user, roles }) {
+    const [hasRoles, setHasRoles] = useState(user.roles)
     const { data, setData, put, processing, errors, reset } = useForm({
         name: user.name,
         email: user.email,
         password: '',
         password_confirmation: '',
+        roles: []
     });
+
+    const handleRoles = (e) => {
+        console.log(hasRoles)
+
+        const isChecked = e.target.checked
+        const value = e.target.value
+
+        if(isChecked) {
+            setHasRoles([...hasRoles, value])
+        } else {
+            setHasRoles(preData => {
+                return preData.filter(role => {
+                    return role != value
+                })
+            })
+        }
+    }
+
+    useEffect(() => {
+        setData('roles', hasRoles)
+    }, [hasRoles])
 
     const submit = (e) => {
         e.preventDefault();
@@ -108,6 +133,24 @@ export default function RoleEdit({ auth, user }) {
                                     />
 
                                     <InputError message={errors.password_confirmation} className="mt-2" />
+                                </div>
+
+                                <div className='mt-4'>
+                                    <InputLabel value="Add/Remove Roles" />
+
+                                    <div className='space-x-8 items-end'>
+                                        {roles.map((role, index) => (
+                                            <label key={index} className='space-x-2'>
+                                                <Checkbox
+                                                    name='roles[]'
+                                                    value={role.name}
+                                                    checked={hasRoles.includes(role.name)}
+                                                    onChange={(e) => handleRoles(e)}
+                                                />
+                                                <span>{ role.name } - { role.id }</span>
+                                            </label>
+                                        ))}
+                                    </div>
                                 </div>
 
                                 <div className="flex items-center justify-end mt-4">

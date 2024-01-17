@@ -1,7 +1,23 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import {Head, Link} from '@inertiajs/react';
+import {Head, Link, useForm} from '@inertiajs/react';
+import {useState} from "react";
+import Modal from "@/Components/Modal.jsx";
+import DangerButton from "@/Components/DangerButton";
+import SecondaryButton from "@/Components/SecondaryButton";
 
 export default function Permissions({ auth, permissions }) {
+    const form = useForm({})
+
+    const [showModal, setShowModal] = useState(false)
+    const confirmDelete = () => setShowModal(true)
+    const closeModal = () => setShowModal(false)
+
+    const deletePermission = (id) => {
+        form.delete(route('permissions.destroy', id), {
+            onSuccess: () => closeModal()
+        })
+    }
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -44,7 +60,28 @@ export default function Permissions({ auth, permissions }) {
                                         <td className="px-6 py-4">{ permission.guard_name }</td>
                                         <td className="px-6 py-4 text-right space-x-4">
                                             <Link href={route('permissions.edit', permission.id)} className='text-blue-400 hover:text-blue-600'>Edit</Link>
-                                            <Link href={route('permissions.destroy', permission.id)} method='DELETE' as='button' className='text-red-400 hover:text-red-600'>Delete</Link>
+
+                                            {/*
+                                            <Link
+                                                href={route('permissions.destroy', permission.id)}
+                                                method='DELETE'
+                                                as='button'
+                                                className='text-red-400 hover:text-red-600'
+                                            >
+                                                Delete
+                                            </Link>
+                                            */}
+
+                                            <button onClick={confirmDelete} className='text-red-400 hover:text-red-600'>Delete</button>
+                                            <Modal show={showModal} onClose={closeModal}>
+                                                <div className='p-6'>
+                                                    <h2 className='text-lg font-semibold text-slate-800'>Are you sure to delete this records?</h2>
+                                                    <div className='mt-6 flex space-x-4'>
+                                                        <DangerButton onClick={(e) => deletePermission(permission.id)}>Delete</DangerButton>
+                                                        <SecondaryButton onClick={closeModal}>Cancel</SecondaryButton>
+                                                    </div>
+                                                </div>
+                                            </Modal>
                                         </td>
                                     </tr>
                                 ))}

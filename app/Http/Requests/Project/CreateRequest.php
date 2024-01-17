@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Project;
 
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules;
 
-class UpdateRequest extends FormRequest
+class CreateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,11 +23,12 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|' . Rule::unique('users', 'email')->ignore($this->user),
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'roles' => ['sometimes', 'array'],
-            'permissions' => ['sometimes', 'array'],
+            'name' => ['required', 'string', 'max:100', Rule::unique('projects', 'name')->ignore($this->project)],
+            'budget' => ['sometimes', 'numeric'],
+            // 'start_at' => ['sometimes', 'date'],
+            // 'end_at' => ['sometimes', 'date'],
+            'properties' => ['sometimes', 'array'],
+            'description' => ['nullable', 'string', 'max:180'],
         ];
     }
 }
