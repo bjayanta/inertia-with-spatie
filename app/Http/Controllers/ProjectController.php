@@ -17,6 +17,8 @@ class ProjectController extends Controller
      */
     public function index(): Response
     {
+        $this->authorize('viewAny', Project::class);
+
         $projects = Project::query()->where('is_default', 0);
 
         if (request()->status) {
@@ -37,6 +39,8 @@ class ProjectController extends Controller
      */
     public function create(): Response
     {
+        $this->authorize('create', Project::class);
+
         return Inertia::render('Project/Create');
     }
 
@@ -45,6 +49,8 @@ class ProjectController extends Controller
      */
     public function store(CreateRequest $request): RedirectResponse
     {
+        $this->authorize('create', Project::class);
+
         Project::create([
             'name' => $request->name,
             'budget' => $request->budget,
@@ -68,17 +74,33 @@ class ProjectController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Project $project): Response
     {
-        //
+        $this->authorize('update', $project);
+
+        return Inertia::render('Project/Edit', [
+            'project' => $project
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(CreateRequest $request, Project $project): RedirectResponse
     {
-        //
+        $this->authorize('update', $project);
+
+        $project->update([
+            'name' => $request->name,
+            'budget' => $request->budget,
+            'start_at' => $request->start_at,
+            'end_at' => $request->end_at,
+            'properties' => $request->properties,
+            'description' => $request->description,
+            'status' => $request->status
+        ]);
+
+        return back();
     }
 
     /**
@@ -86,6 +108,8 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project): RedirectResponse
     {
+        $this->authorize('update', $project);
+
         $project->delete();
         return back();
     }

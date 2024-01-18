@@ -29,13 +29,16 @@ export default function Authenticated({ user, header, children }) {
                                 </NavLink>
 
                                 {/* Project */}
-                                <NavLink
-                                    href={route('projects.index')}
-                                    active={route().current('projects.*')}
-                                >
-                                    Projects
-                                </NavLink>
+                                {hasPermission('view-project') ? (
+                                    <NavLink
+                                        href={route('projects.index')}
+                                        active={route().current('projects.*')}
+                                    >
+                                        Projects
+                                    </NavLink>
+                                ) : ''}
 
+                                {/* Admin */}
                                 {hasRole('admin') ? (
                                     <>
                                         <NavLink

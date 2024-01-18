@@ -4,9 +4,11 @@ import Modal from "@/Components/Modal.jsx";
 import DangerButton from "@/Components/DangerButton.jsx";
 import SecondaryButton from "@/Components/SecondaryButton.jsx";
 import {useState} from "react";
+import { usePermission } from "@/Composables/permissions.js";
 
 export default function Dashboard({ auth, projects }) {
     const form = useForm({})
+    const { hasPermission } = usePermission()
 
     const [showModal, setShowModal] = useState(false)
     const confirmDelete = () => setShowModal(true)
@@ -46,12 +48,14 @@ export default function Dashboard({ auth, projects }) {
                                     All Completed
                                 </Link>
 
-                                <Link
-                                    href={route('projects.create')}
-                                    className='px-3 py-2 text-white font-semibold bg-indigo-500 hover:bg-indigo-700 rounded'
-                                >
-                                    New Project
-                                </Link>
+                                { hasPermission('create-project') ? (
+                                    <Link
+                                        href={route('projects.create')}
+                                        className='px-3 py-2 text-white font-semibold bg-indigo-500 hover:bg-indigo-700 rounded'
+                                    >
+                                        New Project
+                                    </Link>
+                                ) : ''}
                             </div>
                         </div>
 
@@ -94,18 +98,27 @@ export default function Dashboard({ auth, projects }) {
                                         </td>
 
                                         <td className="px-6 py-4 text-right space-x-4">
-                                            <Link href={route('projects.edit', project.id)} className='text-blue-400 hover:text-blue-600'>Edit</Link>
-                                            <button onClick={confirmDelete} className='text-red-400 hover:text-red-600'>Delete</button>
+                                            {/* Update permission */}
+                                            { hasPermission('update-project') ? (
+                                                <Link href={route('projects.edit', project.id)} className='text-blue-400 hover:text-blue-600'>Edit</Link>
+                                            ) : '' }
 
-                                            <Modal show={showModal} onClose={closeModal}>
-                                                <div className='p-6'>
-                                                    <h2 className='text-lg font-semibold text-slate-800'>Are you sure to delete this records?</h2>
-                                                    <div className='mt-6 flex space-x-4'>
-                                                        <DangerButton onClick={(e) => deleteProject(project.id)}>Delete</DangerButton>
-                                                        <SecondaryButton onClick={closeModal}>Cancel</SecondaryButton>
-                                                    </div>
-                                                </div>
-                                            </Modal>
+                                            {/* Delete permission */}
+                                            { hasPermission('delete-project') ? (
+                                                <>
+                                                    <button onClick={confirmDelete} className='text-red-400 hover:text-red-600'>Delete</button>
+
+                                                    <Modal show={showModal} onClose={closeModal}>
+                                                        <div className='p-6'>
+                                                            <h2 className='text-lg font-semibold text-slate-800'>Are you sure to delete this records?</h2>
+                                                            <div className='mt-6 flex space-x-4'>
+                                                                <DangerButton onClick={(e) => deleteProject(project.id)}>Delete</DangerButton>
+                                                                <SecondaryButton onClick={closeModal}>Cancel</SecondaryButton>
+                                                            </div>
+                                                        </div>
+                                                    </Modal>
+                                                </>
+                                            ) : '' }
                                         </td>
                                     </tr>
                                 ))}

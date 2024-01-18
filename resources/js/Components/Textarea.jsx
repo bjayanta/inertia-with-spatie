@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useRef } from 'react';
 
-export default forwardRef(function Textarea({ className = '', isFocused = false, ...props }, ref) {
+export default forwardRef(function Textarea({ className = '', isFocused = false, value = "", ...props }, ref) {
     const input = ref ? ref : useRef();
 
     useEffect(() => {
@@ -17,6 +17,7 @@ export default forwardRef(function Textarea({ className = '', isFocused = false,
                 className
             }
             ref={input}
+            defaultValue={value}
         />
     );
 });

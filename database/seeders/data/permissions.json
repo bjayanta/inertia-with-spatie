@@ -1,0 +1,11 @@
+[
+    {"name": "Create User", "menu": "User"},
+    {"name": "View User", "menu": "User"},
+    {"name": "Update User", "menu": "User"},
+    {"name": "Delete User", "menu": "User"},
+
+    {"name": "Create Project", "menu": "Project"},
+    {"name": "View Project", "menu": "Project"},
+    {"name": "Update Project", "menu": "Project"},
+    {"name": "Delete Project", "menu": "Project"}
+]

@@ -6,34 +6,37 @@ import InputError from "@/Components/InputError.jsx";
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import Textarea from "@/Components/Textarea.jsx";
 
-export default function UserCreate({ auth }) {
+export default function UserCreate({ auth, project }) {
+    const startDate = new Date(project.start_at);
+    const endDate = new Date(project.end_at);
 
-    const { data, setData, post, processing, errors, reset } = useForm({
-        name: '',
-        budget: 0.00,
-        start_at: new Date('YYYY-mm-dd'),
-        end_at: new Date('YYYY-mm-dd'),
-        properties: [],
-        description: '',
+    const { data, setData, put, processing, errors, reset } = useForm({
+        name: project.name,
+        budget: project.budget,
+        start_at: startDate.toLocaleString('en-CA').substring(0, 10),
+        end_at: endDate.toLocaleString('en-CA').substring(0, 10),
+        properties: project.properties,
+        description: project.description,
+        status: project.status
     });
 
     const submit = (e) => {
         e.preventDefault();
-        post(route('projects.store'));
+        put(route('projects.update', project.id));
     };
 
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Projects / Create</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Projects / Edit</h2>}
         >
-            <Head title="Create new project" />
+            <Head title="Update project" />
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className='flex justify-between p-6'>
-                            <div className="text-gray-900">Create a new project.</div>
+                            <div className="text-gray-900">Update project.</div>
 
                             <Link
                                 href={route('projects.index')}
@@ -112,6 +115,7 @@ export default function UserCreate({ auth }) {
 
                                 <div className="mt-4">
                                     <InputLabel htmlFor="description" value="Description" />
+                                    {/*<textarea id="body" value={values.body} onChange={handleChange}></textarea>*/}
 
                                     <Textarea
                                         name='description'
@@ -125,9 +129,26 @@ export default function UserCreate({ auth }) {
                                     <InputError message={errors.description} className="mt-2" />
                                 </div>
 
+                                <div className="mt-4">
+                                    <InputLabel htmlFor="status" value="Status" />
+
+                                    <select
+                                        name="status"
+                                        defaultValue={data.status}
+                                        className="mt-1 block w-full"
+                                        onChange={(e) => setData('status', e.target.value)}
+                                    >
+                                        <option value="Active">Active</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="Completed">Completed</option>
+                                    </select>
+
+                                    <InputError message={errors.status} className="mt-2" />
+                                </div>
+
                                 <div className="flex items-center justify-end mt-4">
                                     <PrimaryButton className="ms-4" disabled={processing}>
-                                        Create
+                                        Change and save
                                     </PrimaryButton>
                                 </div>
                             </form>

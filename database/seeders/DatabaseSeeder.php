@@ -13,11 +13,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // $this->call(RoleSeeder::class);
-        // $this->call(AdminSeeder::class);
+        $this->call(PermissionSeeder::class);
+        $this->call(RoleSeeder::class);
+        $this->call(AdminSeeder::class);
 
         // Project seeder
-        Project::create(['name' => 'Default', 'is_default' => true, 'status' => 'Active']);
+        Project::updateOrCreate(
+            ['name' => 'Default'],
+            ['is_default' => true, 'status' => 'Active']
+        );
 
         // \App\Models\User::factory(10)->create();
 
